@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ThoughtWeaver</title>
+
+  <!-- Main stylesheet for layout, colors, and starfield visuals -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Vis Network library for interactive graph rendering -->
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+<body>
+
+  <!-- ✨ starfield background layer (purely visual, sits behind main content) -->
+  <div id="stars"></div>
+
+  <!-- Main application wrapper -->
+  <div class="wrap">
+    <!-- App title -->
+    <h1>ThoughtWeaver</h1>
+
+    <!-- Short tagline describing the purpose of the app -->
+    <p class="subtitle">Visualize your thoughts into a simple map — spot connections and next steps.</p>
+
+    <!-- Freeform text input where the user can dump their thoughts -->
+    <textarea id="input" placeholder="Dump your thoughts here..."></textarea>
+
+    <!-- Primary action buttons for generating and exporting the map -->
+    <div class="actions">
+      <!-- Triggers the backend to generate a graph from the text -->
+      <button id="gen">Generate Map</button>
+
+      <!-- Exports the current graph as a PNG image -->
+      <button id="exportPng">Export PNG</button>
+
+      <!-- Exports the current graph data as JSON -->
+      <button id="exportJson">Export JSON</button>
+    </div>
+
+    <!-- Main content area: graph visualization + insights sidebar -->
+    <div class="content">
+      <!-- Container where the vis-network graph is rendered -->
+      <div id="graph"></div>
+
+      <!-- 🔍 Insights panel: legend for node categories + model insights list -->
+      <div id="insights">
+        <!-- Visual legend mapping colors/styles to conceptual categories -->
+        <div id="legend" class="legend">
+          <span class="legend-item emotion">
+            <span class="dot emotion"></span> Emotion
+          </span>
+          <span class="legend-item habit">
+            <span class="dot habit"></span> Habit
+          </span>
+          <span class="legend-item goal">
+            <span class="dot goal"></span> Goal
+          </span>
+          <span class="legend-item problem">
+            <span class="dot problem"></span> Problem
+          </span>
+          <span class="legend-item solution">
+            <span class="dot solution"></span> Solution
+          </span>
+        </div>
+
+        <!-- Insights heading -->
+        <h3>Insights</h3>
+
+        <!-- List that gets populated with short, AI-generated insights -->
+        <ul id="insList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightweight star generator for animated background effect -->
+  <script>
+    (function makeStars() {
+      const container = document.getElementById('stars');
+      const COUNT = 150;                 // Number of stars to generate (controls density)
+
+      // Create a simple, randomized starfield using small absolutely-positioned divs
+      for (let i = 0; i < COUNT; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+
+        // Position each star randomly across the viewport
+        s.style.top  = Math.random() * 100 + 'vh';
+        s.style.left = Math.random() * 100 + 'vw';
+
+        // Randomize size between ~1–3px for variety
+        const size = 1 + Math.random() * 2;
+        s.style.width = s.style.height = size + 'px';
+
+        // Vary opacity for depth effect
+        s.style.opacity = (0.2 + Math.random() * 0.8).toFixed(2);
+
+        // Offset animation timing so stars don't all twinkle in sync
+        s.style.animationDelay = (Math.random() * 3).toFixed(2) + 's';
+
+        container.appendChild(s);
+      }
+    })();
+  </script>
+
+  <!-- Main frontend logic for talking to the backend and rendering the graph -->
+  <script src="main.js"></script>
+</body>
+</html>

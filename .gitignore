@@ -1,0 +1,22 @@
+# ---- Python / Backend ----
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+backend/.venv/
+backend/venv/
+
+# Env files (API keys)
+backend/.env
+
+# ---- Frontend (future tools) ----
+node_modules/
+dist/
+.build/
+
+# ---- OS / Editor junk ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

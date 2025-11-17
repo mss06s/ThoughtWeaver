@@ -1,0 +1,297 @@
+/* ==== Starfield background + base layout ==== */
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #000;               /* pure black so stars pop */
+  color: #f5f6f7;
+  overflow-x: hidden;             /* prevent horizontal scroll from graph/starfield */
+}
+
+/* page wrapper: center content and provide padding so layout isn't full-bleed */
+.wrap {
+  max-width: 1100px;
+  margin: 12px auto 48px auto;
+  padding: 20px;
+  box-sizing: border-box;         /* include padding in total width */
+}
+
+/* full-screen star container behind everything */
+#stars {
+  position: fixed;
+  inset: 0;                       /* top/right/bottom/left: 0 */
+  z-index: -1;                    /* behind your UI */
+  background: radial-gradient(ellipse at bottom, #06080f 0%, #000 60%);
+}
+
+/* twinkling stars */
+/* (kept simple and valid) */
+/* the twinkle keyframes are defined later in the file */
+
+textarea {
+  width:100%;
+  height:140px;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #2a2d34;
+  background: rgba(19,21,26,0.8);  /* semi-transparent, glass-like panel */
+  color:#e9eaee;
+  backdrop-filter: blur(4px);      /* soft blur effect behind textarea */
+  /* make the textarea input text larger and easier to scan */
+  font-size: 1.05rem; 
+  line-height: 1.45;  /* more breathing room for wrapped lines */
+}
+
+/* action bar: arrange buttons horizontally with spacing */
+.actions { margin:12px 0; display:flex; gap:10px; }
+
+/* primary button styling shared by all <button> elements */
+button {
+  background:#1f6feb;
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* main layout: graph on left, insights on right */
+.content {
+  display:grid;
+  grid-template-columns: 2fr 1fr;
+  gap:14px;
+}
+
+/* graph canvas container */
+#graph {
+  height:520px;
+  background: rgba(11,12,16,0.65);
+  border:1px solid #2a2d34;
+  border-radius:12px;
+  backdrop-filter: blur(3px);
+  position: relative; /* for skeleton overlay */
+  overflow: hidden;
+}
+
+/* insights sidebar container */
+#insights {
+  background: rgba(19,21,26,0.75);
+  border:1px solid #2a2d34;
+  border-radius:12px;
+  padding:12px;
+  backdrop-filter: blur(3px);
+}
+
+/* minor left padding adjustment for default list behavior (overridden below) */
+#insList { padding-left: 18px; }
+
+/* ==== Insights styling: card-like list with colored accent dots ==== */
+#insights h3 {
+  margin-top: 6px;
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+  color: #eef2ff;
+}
+
+#insList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;                      /* vertical spacing between insight items */
+}
+
+#insList li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: rgba(255,255,255,0.02);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.03);
+  color: #d1d5db;
+  line-height: 1.45;
+}
+
+/* circular accent indicator for each insight line */
+.ins-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: 0 0 12px;
+  margin-top: 6px;
+  box-shadow: 0 4px 10px rgba(2,6,23,0.5);
+}
+
+/* make the first few insight bullets use the category color palette for visual differentiation */
+#insList li:nth-child(1) .ins-dot { background: #9b5de5; }
+#insList li:nth-child(2) .ins-dot { background: #f15bb5; }
+#insList li:nth-child(3) .ins-dot { background: #00bbf9; }
+#insList li:nth-child(4) .ins-dot { background: #f97316; }
+#insList li:nth-child(5) .ins-dot { background: #10b981; }
+
+/* text container inside each insight item */
+.ins-text { flex: 1 1 auto; }
+
+/* reduce visual weight on small screens */
+@media (max-width: 700px) {
+  #insList li { padding: 10px; }
+  .ins-dot { width: 10px; height: 10px; margin-top: 4px; }
+}
+
+/* Sheen animation: slide the background gradient from left to right */
+@keyframes sheen {
+  0%   { background-position: -120% 0; }
+  100% { background-position: 120% 0; }
+}
+
+/* Vertical float motion for the title */
+@keyframes floatTitle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* Hook the sheen animation to the title using a second animation layer */
+h1 {
+  margin: 0 0 6px 0;
+  text-align: center;
+  color: #ffffff; /* fallback for older browsers */
+  font-weight: 800;
+  font-size: clamp(1.5rem, 4.2vw, 2.8rem);
+  /* increase line-height slightly to avoid clipping descenders (g, y, p) */
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  /* make text crisp while still allowing a subtle glow */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  /* small padding to ensure strokes and descenders are visible */
+  padding-bottom: 4px;
+
+  /* sheen: use a clipped background gradient that moves left→right */
+  background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(230,230,255,0.98) 40%, rgba(255,255,255,0.95) 60%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  /* combine float (soft) + sheen (linear) */
+  animation: floatTitle 4s ease-in-out infinite, sheen 2.2s linear infinite;
+
+  /* subtle outline to keep letters readable on the starfield */
+  -webkit-text-stroke: 0.5px rgba(0,0,0,0.55);
+  text-shadow: 0 0 0 rgba(0,0,0,0); /* keep text sharp (no blur shadow) */
+}
+
+/* ==== Legend + node info panel ==== */
+
+.legend {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+/* badge-style legend items for each category */
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  cursor: default;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  color: #9ca3af; /* default label color, overridden by category classes below */
+}
+
+/* dot inside each legend pill */
+.legend-item .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+/* per-category dot colors */
+.dot.emotion  { background: #9b5de5; }
+.dot.habit    { background: #f15bb5; }
+.dot.goal     { background: #00bbf9; }
+.dot.problem  { background: #f97316; }
+.dot.solution { background: #10b981; }
+
+/* color the label text to match the dot by using the category class on the parent */
+.legend-item.emotion { color: #9b5de5; }
+.legend-item.habit   { color: #f15bb5; }
+.legend-item.goal    { color: #00bbf9; }
+.legend-item.problem { color: #f97316; }
+.legend-item.solution{ color: #10b981; }
+
+/* force legend label colors with higher specificity in case other rules interfere */
+#legend .legend-item.emotion { color: #9b5de5 !important; }
+#legend .legend-item.habit   { color: #f15bb5 !important; }
+#legend .legend-item.goal    { color: #00bbf9 !important; }
+#legend .legend-item.problem { color: #f97316 !important; }
+#legend .legend-item.solution{ color: #10b981 !important; }
+
+/* subtle hover / focus affordance for legend items */
+.legend-item:hover,
+.legend-item:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+  background: rgba(255,255,255,0.03);
+}
+
+/* responsive: wrap legend into blocks on small screens */
+@media (max-width: 520px) {
+  .legend { gap: 6px; }
+  .legend-item { padding: 6px 8px; font-size: 0.78rem; }
+}
+
+/* single-line hint text under legend */
+.node-info {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+/* Subtitle and example prompt */
+.subtitle {
+  margin: 6px 0 12px 0;
+  color: #cbd5e1;
+  font-size: 1rem;
+  text-align: center;
+  opacity: 0.95;
+}
+
+/* small button variant used for inline actions (e.g., example prompt) */
+.btn.small {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  background: #1f6feb;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* ----- star elements: individual star styling ----- */
+.star {
+  position: absolute;
+  pointer-events: none;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255,255,255,0.12), 0 0 12px rgba(255,255,255,0.06);
+  transform: translateZ(0);
+  animation: twinkle 4s infinite ease-in-out;
+}
+
+/* simple opacity + scale animation for star twinkling */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%      { opacity: 0.9; transform: scale(1.2); }
+}
+
+
