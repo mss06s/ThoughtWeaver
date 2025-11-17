@@ -2,7 +2,7 @@
 const API_BASE =
   location.hostname === "localhost" || location.hostname === "127.0.0.1"
     ? "http://127.0.0.1:5050"        // local Flask dev server
-    : "https://YOUR-BACKEND.onrender.com"; // replace with deployed backend URL when hosting
+    : "https://thoughtweaver-backend.onrender.com";  // hosted backend
 
 // ==== DOM refs ====
 // Core UI elements wired up to JS logic
@@ -318,7 +318,6 @@ genBtn.onclick = async () => {
 
   genBtn.disabled = true;
   genBtn.textContent = "Thinking...";
-  // (no skeleton) keep UI minimal
 
   try {
     const res = await fetch(`${API_BASE}/api/graph`, {
